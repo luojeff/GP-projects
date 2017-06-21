@@ -13,9 +13,9 @@ public class Maximizer {
     private ArrayList<Candidate> initialPopulation;
 
     private static double STRICTNESS = 0.1;
-    private static double MUTATION_RATE = 0.01;
+    private static double MUTATION_RATE = 0.03;
     private static int POPULATION_SIZE = 100;
-    private static int NUM_GENERATIONS = 1000;
+    private static int NUM_GENERATIONS = 100;
 
     private static double INITIAL_VARIATION = 100; // Variation of beginning candidate xVals
     private static double MUTATION_VARIATION = 1;
@@ -58,11 +58,10 @@ public class Maximizer {
         for (int i = 0; i < POPULATION_SIZE; i++) {
             first = initialPopulation.get((int) (Math.random() * POPULATION_SIZE * STRICTNESS));
             second = initialPopulation.get((int) (Math.random() * POPULATION_SIZE * STRICTNESS));
+            newVal = (first.xVal + second.xVal) / 2;
 
             if (Math.random() < MUTATION_RATE) {
-                newVal = ((first.xVal + second.xVal) / 2) + (Math.random() * MUTATION_VARIATION - MUTATION_VARIATION / 2);
-            } else {
-                newVal = (first.xVal + second.xVal) / 2;
+                newVal += (Math.random() * MUTATION_VARIATION - MUTATION_VARIATION / 2);
             }
 
             newPopulation.add(new Candidate(newVal));
@@ -86,16 +85,22 @@ public class Maximizer {
 
     public void calculateMaximum() {
         createInitialCandidates();
+        System.out.println("Initial Population Size: " + POPULATION_SIZE);
+        System.out.println("Chance of Mutation: " + MUTATION_RATE * 100 + "%");
+        System.out.println("Percentile for Reproduction: Top " + STRICTNESS * 100 + "%\n");
 
         for (int i = 1; i <= NUM_GENERATIONS; i++) {
             evaluateFitness();
             breed();
 
             double average = getAverageOfBest();
+            double best = initialPopulation.get(0).xVal;
             System.out.println("----------");
             System.out.println("Generation: " + i);
+            System.out.println("> Best x-val: " + best + " <");
+            System.out.println("> Best Maximum: " + getFitness(best) + " <");
             System.out.println("Average x-val: " + average);
-            System.out.println("Maximum: " + getFitness(average));
+            System.out.println("Average Maximum: " + getFitness(average));
         }
     }
 
@@ -109,8 +114,8 @@ public class Maximizer {
         Repeat
          */
 
+        System.out.println("** Downward Quartic Maximum Finder (Genetic Algorithm) **");
         Maximizer approx = new Maximizer(-3, 6, -1, -1, 4); // FITNESS will be value plugged into quartic
-
         approx.calculateMaximum();
     }
 }
